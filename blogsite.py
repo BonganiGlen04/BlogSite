@@ -5,7 +5,7 @@ from form import RegistrationForm, LoginForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6'
-app.confirg['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
 
 class User(db.Model):
@@ -22,7 +22,7 @@ class User(db.Model):
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.now)
     content = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
@@ -79,4 +79,6 @@ def login():
     return render_template("login.html", title="Login", form=form)
 
 if __name__ == "__main__":  
+    # with app.app_context():
+    #    db.create_all()
     app.run(debug=True)
