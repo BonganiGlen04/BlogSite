@@ -1,16 +1,22 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, flash, redirect
+from form import RegistrationForm, LoginForm
+
 app = Flask(__name__)
+
+app.config['SECRET_KEY'] = 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6'
 
 post = [
     {
     "title": "First Post",
     "content": "This is the content of the first post.",
-    "author": "John Doe"
+    "author": "John Doe",
+    "date_posted": "March 30, 2026"
 },
    {
     "title": "Second Post",
     "content": "This is the content of the second post.",
-    "author": "John Doe"
+    "author": "John Doe",
+    "date_posted": "March 29, 2026"
 }
 ]
 
@@ -23,5 +29,30 @@ def home():
 def about():
     return render_template("about.html", title = "About")
 
-if __name__ == "__main__":
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    form = RegistrationForm()
+
+    if form.validate_on_submit():
+        flash(f"Account created for {form.username.data}!", "success")
+        return redirect(url_for("home"))
+
+
+    return render_template("register.html", title="Register", form=form)
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        if form.email.data == "admin@blog.com" and form.password.data == "password":
+            flash("You have been logged in!", "success")
+            return redirect(url_for("home"))
+        else:
+            flash("Login Unsuccessful. Please check email and password", "danger")
+            
+    return render_template("login.html", title="Login", form=form)
+
+if __name__ == "__main__":  
     app.run(debug=True)
